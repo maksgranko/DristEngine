@@ -13,11 +13,11 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("DristEngine")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf50ee5a376bdf4410a01884432b8d218e36fca0")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2025.260.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fc303c52f665af388d5ee66de1a986451eb8ce54")]
 [assembly: System.Reflection.AssemblyProductAttribute("DristEngine")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DristEngine")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.2025.260.1")]
 
 // Создано классом WriteCodeFragment MSBuild.
 
