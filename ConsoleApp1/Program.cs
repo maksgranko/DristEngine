@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp1
+﻿using System.Runtime.InteropServices;
+
+namespace ConsoleApp1
 {
     internal class Program
     {
@@ -15,7 +17,6 @@
 
         private static void GameLoop()
         {
-            UpdateConsoleSize();
             while (true)
             {
                 UpdateConsoleSize();
@@ -26,23 +27,30 @@
 
         private static void UpdateConsoleSize()
         {
+#pragma warning disable CA1416 // Проверка совместимости платформы
             if ((Console.WindowHeight != Console.BufferHeight) || (Console.WindowWidth != Console.BufferWidth))
             {
                 try
                 {
                     Console.SetCursorPosition(0, 0);
-                    Console.BufferWidth = Console.WindowWidth;
-                    Console.BufferHeight = Console.WindowHeight;
+                    switch (Environment.OSVersion.Platform) {
+                        case PlatformID.Win32NT:
+                            Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 catch { }
             }
+#pragma warning restore CA1416 // Проверка совместимости платформы
         }
 
         private static void Il_OnKeyEvent(KeyEventArgs e)
         {
             if (Debug.VerboseInput)
-            {
-                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.RepeatCount}\t{e.ScanCode}\t{e.VirtualKeyCode}");
+            { 
+                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.RepeatCount}\t{e.ScanCode}\t{e.VirtualKeyCode}\t{e.UnicodeChar}\t{e.ControlKeyState}");
             }
         }
 

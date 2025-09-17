@@ -1,7 +1,4 @@
-﻿using ConsoleApp1.Extensions;
-using System;
-using System.Runtime.InteropServices;
-using System.Threading;
+﻿using System.Runtime.InteropServices;
 
 public class InputListener : IDisposable
 {
@@ -136,21 +133,21 @@ public class InputListener : IDisposable
             if (record.EventType == KEY_EVENT)
             {
                 var ke = record.Event.KeyEvent;
-                var args = new KeyEventArgs
+                KeyEventArgs args = new()
                 {
-                    KeyDown = ke.bKeyDown,
-                    RepeatCount = ke.wRepeatCount,
-                    VirtualKeyCode = ke.wVirtualKeyCode,
-                    ScanCode = ke.wVirtualScanCode,
-                    UnicodeChar = ke.UnicodeChar,
-                    ControlKeyState = ke.dwControlKeyState
+                    KeyDown =            ke.bKeyDown,
+                    RepeatCount =        ke.wRepeatCount,
+                    VirtualKeyCode =     ke.wVirtualKeyCode,
+                    ScanCode =           ke.wVirtualScanCode,
+                    UnicodeChar =        ke.UnicodeChar,
+                    ControlKeyState =    ke.dwControlKeyState
                 };
                 OnKeyEvent?.Invoke(args);
             }
             else if (record.EventType == MOUSE_EVENT)
             {
                 var me = record.Event.MouseEvent;
-                var args = new MouseEventArgs
+                MouseEventArgs args = new()
                 {
                     X = me.dwMousePosition.X,
                     Y = me.dwMousePosition.Y,
@@ -158,14 +155,9 @@ public class InputListener : IDisposable
                     RightButtonPressed = (me.dwButtonState & 0x2) != 0,
                     MiddleButtonPressed = (me.dwButtonState & 0x4) != 0,
                     MouseMoved = (me.dwEventFlags & 0x1) != 0,
-                    MouseWheelUp = (me.dwEventFlags == 0x4 && (me.dwButtonState == 0x700000)),
-                    MouseWheelDown = (me.dwEventFlags == 0x4 && (me.dwButtonState == 0xFF880000 ))
+                    MouseWheelUp = (me.dwEventFlags == 0x4 && (me.dwButtonState & 0x700000) != 0),
+                    MouseWheelDown = (me.dwEventFlags == 0x4 && (me.dwButtonState & 0xFF800000) != 0)
                 };
-
-                //Console.WriteLine((0xFF880000 & 0xFF0000000) + "\t" + (0xFF880000 & 0xFF0000000));
-                //Console.WriteLine(0xFF880000 & 0x0700000);
-                //Console.WriteLine((me.dwButtonState == 0x780000) + "\t" + (me.dwButtonState == 0xFF880000) + "\t" + me.dwButtonState);
-                Console.WriteLine(me.dwButtonState.ToBinDebug());
                 OnMouseEvent?.Invoke(args);
             }
         }
