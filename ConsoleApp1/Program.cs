@@ -1,4 +1,5 @@
 ﻿using ConsoleApp1.Controllers;
+using ConsoleApp1.Extensions;
 
 namespace ConsoleApp1
 {
@@ -7,7 +8,7 @@ namespace ConsoleApp1
         private static (bool VerboseInput, bool, bool, bool) Debug = (true, false, false, false);
         private static ExtendedInput? EInput;
         static void Main(string[] args)
-        {
+        {            
             OnInit();
             OnInitLazy();
             GameLoop();

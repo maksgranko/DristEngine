@@ -46,7 +46,7 @@ namespace ConsoleApp1.Extensions
         {
             return val.ToNumberBase(NumeralSystem.OCT);
         }
-        public static string ToDc<T>(this T val) where T : struct, IConvertible
+        public static string ToDec<T>(this T val) where T : struct, IConvertible
         {
             return val.ToNumberBase(NumeralSystem.DEC);
         }

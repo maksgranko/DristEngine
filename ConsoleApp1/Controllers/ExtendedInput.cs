@@ -1,10 +1,18 @@
 ﻿using ConsoleApp1.Extensions;
+using System.Linq;
 
 namespace ConsoleApp1.Controllers
 {
     internal class ExtendedInput : InputListener
     {
         private static (bool VerboseInput, bool) Debug = (true, false);
+        private static Key[] KeysBuf = new Key[3];
+        private static byte ModCodeBuf = new byte();
+
+        //public static ModCode[] GetCurrentMods(byte ModFlags)
+        //{
+            //ModCode[] ModCodeBuf = new ModCode[8];
+        //}
 
         public ExtendedInput(bool VerboseInput)
         {
@@ -16,11 +24,24 @@ namespace ConsoleApp1.Controllers
 
         private static void Il_OnKeyEvent(KeyEventArgs e)
         {
+            int index = Array.FindIndex(KeysBuf, k => (byte)k.KeyCode == e.VirtualKeyCode);
+            if (index != -1)
+            {
+                KeysBuf[index].LongPressed = true;
+            }
+            else {
+                Array.ForEach(KeysBuf, k =>
+                {
+                    if (k.Equals(Key.Default)) k.KeyCode = (KeyCode)e.VirtualKeyCode;
+                    return;
+                });
+            }
+
+
             if (Debug.VerboseInput)
             {
-                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.RepeatCount}\t{e.ScanCode}\t{e.VirtualKeyCode}\t{e.UnicodeChar}\t{e.ControlKeyState}");
+                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.ScanCode}\t{e.VirtualKeyCode}\t{e.UnicodeChar}\t{e.ControlKeyState}");
                 Console.WriteLine(Colorist.Red(true, false) + $"\t{e.ControlKeyState.ToBin()}");
-
             }
         }
 
@@ -34,10 +55,55 @@ namespace ConsoleApp1.Controllers
         }
     }
 
-    enum KeyCode
+    public struct Key
     {
+        public KeyCode KeyCode;
+        public bool LongPressed;
+
+        public Key(KeyCode keyCode, bool longPressed)
+        {
+            KeyCode = keyCode;
+            LongPressed = longPressed;
+        }
+        public bool Equals(Key other)
+        {
+            return KeyCode == other.KeyCode && LongPressed == other.LongPressed;
+        }
+        public bool Equals(KeyCode other)
+        {
+            return KeyCode == other;
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (!(obj is Key other)) return false;
+            return Equals(other);
+        }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((int)KeyCode * 397) ^ LongPressed.GetHashCode();
+            }
+        }
+        public static bool operator ==(Key key, KeyCode keyCode)
+        {
+            return key.KeyCode == keyCode;
+        }
+        public static bool operator !=(Key key, KeyCode keyCode)
+        {
+            return key.KeyCode != keyCode;
+        }
+
+        public static Key Default => new Key(KeyCode.None, false);
+    }
+
+    public enum KeyCode
+    {
+        None = 0,
         Backspace = 8,
         Tab = 9,
+        Clear = 12,
         Enter = 13,
         Shift = 16,
         Ctrl = 17,
@@ -54,6 +120,7 @@ namespace ConsoleApp1.Controllers
         UpArrow = 38,
         RightArrow = 39,
         DownArrow = 40,
+        PrintScreen = 44,
         Insert = 45,
         Delete = 46,
         Digit0 = 48,
@@ -92,6 +159,9 @@ namespace ConsoleApp1.Controllers
         KeyX = 88,
         KeyY = 89,
         KeyZ = 90,
+        Meta = 91,
+        R_Meta = 92,
+        Menu = 93,
         Numpad0 = 96,
         Numpad1 = 97,
         Numpad2 = 98,
@@ -132,5 +202,25 @@ namespace ConsoleApp1.Controllers
         BackSlash = 220,
         CloseBracket = 221,
         SingleQuote = 222
+    }
+    enum ModCode
+    {
+        // Locks
+        NumLock = 0x20,
+        ScrollLock = 0x40,
+        CapsLock = 0x80,
+
+        // Right Side Keyboard
+        Right = 0x100,
+
+        RALT = 0x1,
+        RCTRL = 0x4,
+
+        // Left Side Keyboard
+        ALT = 0x2,
+        CTRL = 0x8,
+        Shift = 0x10,
+
+
     }
 }
