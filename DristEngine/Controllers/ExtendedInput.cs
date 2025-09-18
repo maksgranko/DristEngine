@@ -6,12 +6,12 @@ namespace ConsoleApp1.Controllers
     internal class ExtendedInput : InputListener
     {
         private static (bool VerboseInput, bool) Debug = (true, false);
-        private static Key[] KeysBuf = new Key[3];
-        private static byte ModCodeBuf = new byte();
+        private static Key[] KB_KeysBuf = new Key[10];
+        private static byte KB_ModCodeBuf = new byte();
 
         //public static ModCode[] GetCurrentMods(byte ModFlags)
         //{
-            //ModCode[] ModCodeBuf = new ModCode[8];
+            //ModCode[] KB_ModCodeBuf = new ModCode[8];
         //}
 
         public ExtendedInput(bool VerboseInput)
@@ -24,23 +24,38 @@ namespace ConsoleApp1.Controllers
 
         private static void Il_OnKeyEvent(KeyEventArgs e)
         {
-            int index = Array.FindIndex(KeysBuf, k => (byte)k.KeyCode == e.VirtualKeyCode);
+            KB_ModCodeBuf = (byte)e.ControlKeyState;
+
+            int index = Array.FindIndex(KB_KeysBuf, k => (byte)k.KeyCode == e.ScanCode);
             if (index != -1)
             {
-                KeysBuf[index].LongPressed = true;
+                if (e.KeyDown) KB_KeysBuf[index].LongPressed = true;
+                else
+                {
+                    KB_KeysBuf[index] = Key.Default; 
+                }
             }
             else {
-                Array.ForEach(KeysBuf, k =>
+                for (int i =0;i<10;i++)
                 {
-                    if (k.Equals(Key.Default)) k.KeyCode = (KeyCode)e.VirtualKeyCode;
-                    return;
-                });
+                    if (KB_KeysBuf[i].Equals(Key.Default))
+                    {
+                        KB_KeysBuf[i].KeyCode = (KeyCode)e.ScanCode;
+                        break;
+                    }
+                }
             }
 
+            string debug = "";
+            foreach (var item in KB_KeysBuf)
+            {
+                debug += " " + item.KeyCode;
+            }
+            Console.WriteLine(debug);
 
             if (Debug.VerboseInput)
             {
-                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.ScanCode}\t{e.VirtualKeyCode}\t{e.UnicodeChar}\t{e.ControlKeyState}");
+                Console.WriteLine(Colorist.Red(true, false) + $"\t{e.KeyDown}\t{e.ScanCode}\t{e.VirtualKeyCode}\t({e.UnicodeChar} or {(int)e.UnicodeChar})\t{e.ControlKeyState}");
                 Console.WriteLine(Colorist.Red(true, false) + $"\t{e.ControlKeyState.ToBin()}");
             }
         }
@@ -78,6 +93,10 @@ namespace ConsoleApp1.Controllers
             if (obj == null) return false;
             if (!(obj is Key other)) return false;
             return Equals(other);
+        }
+        public override string ToString()
+        {
+            return this.KeyCode.ToString();
         }
         public override int GetHashCode()
         {

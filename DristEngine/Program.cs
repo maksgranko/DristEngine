@@ -1,5 +1,6 @@
 ﻿using ConsoleApp1.Controllers;
 using ConsoleApp1.Extensions;
+using DristEngine.Controllers.Utils;
 
 namespace ConsoleApp1
 {
@@ -27,9 +28,12 @@ namespace ConsoleApp1
         }
 
         private static void OnInit()
-        { 
+        {
+            Console.CancelKeyPress += (s, e) => e.Cancel = true;
+            Console.TreatControlCAsInput = false;
+            StickyKeys.Disable();
         }
-
+        
         private static void OnInitLazy()
         {
             if(EInput == null) EInput = new(Debug.VerboseInput);
