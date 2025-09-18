@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>1.2025.260.1</AssemblyVersion>
-    <FileVersion>1.2025.260.1</FileVersion>
+    <AssemblyVersion>1.2025.261.5</AssemblyVersion>
+    <FileVersion>1.2025.261.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
