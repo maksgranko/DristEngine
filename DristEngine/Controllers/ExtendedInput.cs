@@ -6,12 +6,30 @@ namespace ConsoleApp1.Controllers
     internal class ExtendedInput : InputListener
     {
         private static (bool VerboseInput, bool) Debug = (true, false);
-        private static Key[] KB_KeysBuf = new Key[10];
+        private static Key[] KB_KeysBuf = new Key[5];
         private static byte KB_ModCodeBuf = new byte();
 
-        //public static ModCode[] GetCurrentMods(byte ModFlags)
+        public static ModCode[] GetCurrentMods(byte ModFlags)
+        {
+            ModCode[] flags =
+            [
+                // Locks
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.NumLock),
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.ScrollLock),
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.CapsLock),
+                // Right Side Keyboard
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.Right)
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.RALT),
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.RCTRL),
+        // Left Side Keyboard
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.ALT),
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.CTRL),
+                (ModCode)(KB_ModCodeBuf & (byte)ModCode.Shift),
+            ];
+        }
+        //public static ModCode[] GetCurrentMods()
         //{
-        //ModCode[] KB_ModCodeBuf = new ModCode[8];
+        //    ModCode[] flags = new ModCode[9];
         //}
 
         public ExtendedInput(bool VerboseInput)
@@ -26,51 +44,32 @@ namespace ConsoleApp1.Controllers
         {
             KB_ModCodeBuf = (byte)e.ControlKeyState;
 
-            // Используем VirtualKeyCode как основной идентификатор, но если он равен 1 (неопределенный),
-            // то используем ScanCode + уникальный префикс для разделения
-            ushort keyId = e.VirtualKeyCode != 1 ? e.VirtualKeyCode : (ushort)(e.ScanCode + 1000);
-
-            int index = Array.FindIndex(KB_KeysBuf, k => (ushort)k.KeyCode == keyId);
-
-            if (e.KeyDown)
+            int index = Array.FindIndex(KB_KeysBuf, k => (byte)k.KeyCode == e.ScanCode);
+            if (index != -1)
             {
-                if (index != -1)
-                {
-                    KB_KeysBuf[index].LongPressed = true;
-                }
+                if (e.KeyDown) KB_KeysBuf[index].LongPressed = true;
                 else
                 {
-                    for (int i = 0; i < KB_KeysBuf.Length; i++)
-                    {
-                        if (KB_KeysBuf[i].Equals(Key.Default))
-                        {
-                            KB_KeysBuf[i] = new Key((KeyCode)keyId, false);
-                            break;
-                        }
-                    }
+                    KB_KeysBuf[index] = Key.Default; 
                 }
             }
-            else
-            {
-                if (index != -1)
+            else {
+                for (int i =0;i<10;i++)
                 {
-                    KB_KeysBuf[index] = Key.Default;
+                    if (KB_KeysBuf[i].Equals(Key.Default))
+                    {
+                        KB_KeysBuf[i].KeyCode = (KeyCode)e.ScanCode;
+                        break;
+                    }
                 }
             }
 
             string debug = "";
             foreach (var item in KB_KeysBuf)
             {
-                if (!item.Equals(Key.Default))
-                {
-                    // Показываем реальное значение для отладки
-                    if ((ushort)item.KeyCode > 1000)
-                        debug += " ScanCode:" + ((ushort)item.KeyCode - 1000);
-                    else
-                        debug += " VKey:" + item.KeyCode;
-                }
+                debug += " " + item.KeyCode;
             }
-            Console.WriteLine("Keys: " + debug);
+            Console.WriteLine(debug);
 
             if (Debug.VerboseInput)
             {
@@ -139,8 +138,6 @@ namespace ConsoleApp1.Controllers
     public enum KeyCode
     {
         None = 0,
-        // Диапазон 1000+ зарезервирован для ScanCode значений
-        ScanCodeBase = 1000,
         Backspace = 8,
         Tab = 9,
         Clear = 12,

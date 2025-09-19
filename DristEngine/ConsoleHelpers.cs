@@ -3,7 +3,7 @@
 
     internal class ConsoleHelpers
     {
-
+        public static void SetConsoleTitle(string title) => Console.Title = title;
         public static void UpdateConsoleSize()
         {
 #pragma warning disable CA1416 // Проверка совместимости платформы
