@@ -11,14 +11,14 @@ namespace ConsoleApp1.Controllers
 
         public static ModCode[] GetCurrentMods(byte ModFlags)
         {
-            ModCode[] flags =
+            return
             [
                 // Locks
                 (ModCode)(KB_ModCodeBuf & (byte)ModCode.NumLock),
                 (ModCode)(KB_ModCodeBuf & (byte)ModCode.ScrollLock),
                 (ModCode)(KB_ModCodeBuf & (byte)ModCode.CapsLock),
                 // Right Side Keyboard
-                (ModCode)(KB_ModCodeBuf & (byte)ModCode.Right)
+                (ModCode)(KB_ModCodeBuf & (ushort)ModCode.Right),
                 (ModCode)(KB_ModCodeBuf & (byte)ModCode.RALT),
                 (ModCode)(KB_ModCodeBuf & (byte)ModCode.RCTRL),
         // Left Side Keyboard
@@ -54,7 +54,7 @@ namespace ConsoleApp1.Controllers
                 }
             }
             else {
-                for (int i =0;i<10;i++)
+                for (int i =0;i<5;i++)
                 {
                     if (KB_KeysBuf[i].Equals(Key.Default))
                     {
